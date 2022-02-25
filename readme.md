@@ -80,3 +80,5 @@ D:\proj\private\wink-test-private\blink_detect\blink_detect_func.py
 iot 电脑没有摄像头
 
 git remote add origin https://gitee.com/starplatinum111/blink_detect.git
+
+git add 文件夹
