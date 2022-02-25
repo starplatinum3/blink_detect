@@ -8,7 +8,7 @@ target/
 *.rar
 *.docx
 *.zip
-*.dat
+# *.dat
 
 .idea
 backup
@@ -27,7 +27,8 @@ train_txt
 *.log
 *.npy
 
-*.m
+# *.m
+# 可以防止ignore 主要是 我防止了 目录， 但是没有防止 .m 文件。。。
 
 *.iml
 .gradle
