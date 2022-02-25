@@ -1,0 +1,4 @@
+
+
+class CheckFaceBundle:
+    noFaceWarnUtil

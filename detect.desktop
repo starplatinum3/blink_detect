@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=example
+Comment=My Python Program
+Exec=sh  /home/pi/proj/pythonProj/blink_detect/start.sh
+Icon=/home/pi/proj/pythonProj/blink_detect/example.jpg
+Terminal=true
+MultipleArgs=false
+Type=Application
+Categories=Application;Development;
+StartupNotify=true
