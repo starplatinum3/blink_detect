@@ -82,3 +82,5 @@ iot 电脑没有摄像头
 git remote add origin https://gitee.com/starplatinum111/blink_detect.git
 
 git add 文件夹
+
+git 有些文件没有add ignore也没有
