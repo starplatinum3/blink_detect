@@ -757,7 +757,8 @@ def emotion_detect(log, file_path):
     # noFaceWarnUtil = NoFaceWarnUtil()
     # start_time = time.time()
     # https://blog.csdn.net/m0_37606112/article/details/79590012
-    processBar = ProcessBar(cap, video_win_name)
+    if show_win:
+        processBar = ProcessBar(cap, video_win_name)
     # frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     #
     # loop_flag = 0
@@ -1330,7 +1331,8 @@ video_path = r"G:\FFOutput\sleep_VID_20211007_203000.mp4"
 # 这视频 不行 打不卡了
 # 眨眼 好像有点准确 又有点不准
 # video_path = r"G:\FFOutput\blink_VID_20211007_155744.mp4"
-show_win=False
+# show_win=False
+show_win=True
 parser = argparse.ArgumentParser()
 parser.add_argument(
     "--video_file_path", required=False, type=str,

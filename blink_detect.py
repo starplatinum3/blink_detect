@@ -743,6 +743,7 @@ def emotion_detect(log, file_path):
     cap.set(3, 640)
     cap.set(4, 480)
     show_it = False
+    show_processBar=False
 
     # blink_cnt_sleep = 5
     blink_cnt_sleep = 4
@@ -754,7 +755,8 @@ def emotion_detect(log, file_path):
     # noFaceWarnUtil = NoFaceWarnUtil()
     # start_time = time.time()
     # https://blog.csdn.net/m0_37606112/article/details/79590012
-    processBar = ProcessBar(cap, video_win_name)
+    if show_processBar:
+        processBar = ProcessBar(cap, video_win_name)
     # frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     #
     # loop_flag = 0
@@ -788,8 +790,10 @@ def emotion_detect(log, file_path):
     # svm_mouth_sad = svm.Svm(svm_mouth_sad_path)
     svm_mouth_below_sad = svm.Svm(svm_mouth_below_sad_path)
     svm_nose_bridge_distance_disgust = svm.Svm(svm_nose_bridge_distance_disgust_path)
+    print("svm end")
     while (1):
-        # processBar.control()
+        if show_processBar:
+            processBar.control()
 
         # if loop_flag == pos:
         #     loop_flag = loop_flag + 1
