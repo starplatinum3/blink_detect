@@ -84,3 +84,29 @@ git remote add origin https://gitee.com/starplatinum111/blink_detect.git
 git add 文件夹
 
 git 有些文件没有add ignore也没有
+
+
+D:\proj\private\wink-test-private\blink_detect>git push origin master
+Enumerating objects: 29, done.
+Counting objects: 100% (29/29), done.
+Delta compression using up to 16 threads
+Compressing objects: 100% (26/26), done.
+Writing objects: 100% (26/26), 69.01 MiB | 10.94 MiB/s, done.
+Total 26 (delta 12), reused 0 (delta 0), pack-reused 0
+remote: Powered by GITEE.COM [GNK-6.2]
+remote: warning: This repository has 1 files larger than 50.00 MB
+remote: The size information of several files as follows:
+remote: File e0ec20d69ac9195f056214f071e12afcfe714199 72.31  MB
+remote: Use command below to see the filename:
+remote: git rev-list --objects --all | grep $oid
+remote: HelpLink: https://gitee.com/help/articles/4232
+To https://gitee.com/starplatinum111/blink_detect.git
+   e7c0ef7..3d7556f  master -> master
+
+大文件上传确实挺慢的 大文件要不要ignore呢
+刚才试了一下 大文件通过阿里云盘传递的话 也可以，就是稍微麻烦了点 要建立文件夹啥的，但是也没有太麻烦，
+
+大文件下载有点慢 要不还是 ignore ,但是又考虑到下载下来就能用。。
+
+2022年3月1日19:48:43
+show_win 
