@@ -31,7 +31,10 @@ import util
 # time_str = "2021_10_05_17_31_42"
 # time_str = "2021_10_05_17_48_49"
 # time_str = "2021_10_05_20_16_42"
-time_str = "2021_10_05_20_45_55"
+# time_str = "2021_10_05_20_45_55"
+# time_str= "2022_02_26_09_37_27"
+time_str= "2022_02_26_10_03_23"
+
 # train_mouth_sad_yes_2021_10_01_22_27_18.txt
 # now_time_str = util.get_now_time_str()
 # train_yes_path = 'train/train_open{}.txt'.format(time_str)
@@ -84,6 +87,7 @@ def read_file(train, labels, file_path,label=1):
             # print(data)
             data = float(data)
             temp.append(data)
+            # 每一行是一个列表
         # print(temp)
         train.append(temp)
         train_vars.append(temp)
@@ -254,7 +258,7 @@ def test_cut_lst():
     print(lst1, lst2)
 
 # 眼睛睁大了 框也没有增大 dlib
-# show(data_dic)
+show(data_dic)
 start_train(train,labels)
 # https://zhuanlan.zhihu.com/p/361835285
 # 悲伤

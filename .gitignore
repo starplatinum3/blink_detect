@@ -22,7 +22,7 @@ img
 log
 
 train_txt
-*.txt 
+# *.txt 
 *.docx 
 *.log
 *.npy

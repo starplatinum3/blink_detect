@@ -375,8 +375,8 @@ def eye_cnt(res_eye_close, frame_counter, EYE_AR_CONSEC_FRAMES,
         # else:
         # 当EAR小于阈值时，接连多少帧一定发生眨眼动作，只有小于阈值的帧数超过了这个值时，
         # 才认为当前眼睛是闭合的，即发生了眨眼动作；否则则认为是误操作。
-        print("frame_counter")
-        print(frame_counter)
+        # print("frame_counter")
+        # print(frame_counter)
         # 连续三帧感觉条件太苛刻
         if frame_counter >= EYE_AR_CONSEC_FRAMES:
             if count < frame_cnt_blink_refresh:
@@ -507,37 +507,12 @@ def close_eye_cal(count, frame_counter, img, svm_eye, ear, blink_counter):
                     (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
         cv2.putText(img, "EAR:{:.2f}".format(ear), (300, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
         # cv2.putText(img, "MOUTH{0}".format(mTOTAL), (500, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-        print("Blinks:{0}".format(blink_counter))
-        print("EAR:{:.2f}".format(ear))
+        # print("Blinks:{0}".format(blink_counter))
+        # print("EAR:{:.2f}".format(ear))
         # print("MOUTH{0}".format(mTOTAL))
     return count, frame_counter, blink_counter
 
-noFaceWarnUtil = NoFaceWarnUtil()
-
-
-svm_path = "train/close_eye_2021_10_05_17_31_42.m"
-svm_eye = svm.Svm(svm_path)
-svm_path_angry = "train/train_eye_brow_angry_2021_09_22_08_53_41.m"
-svm_mouth_amazing_path = "train/train_eye_amazing_2021_09_22_09_17_24.m"
-svm_mouth_sad_path = "train/train_mouth_sad_2021_10_01_22_27_18.m"
-# svm_mouth_below_sad_path = "train/train_mouth_sad_2021_10_02_11_12_46.m"
-svm_mouth_below_sad_path = "train/mouth_up_sad_2021_10_05_20_45_55.m"
-# 搞错了，这里弄得是嘴巴
-# svm_nose_bridge_distance_disgust_path = "train/nose_bridge_distance_disgust_2021_10_03_11_20_49.m"
-# svm_nose_bridge_distance_disgust_path = "train/nose_bridge_distance_disgust_2021_10_03_11_31_39.m"
-# svm_nose_bridge_distance_disgust_path = "train/nose_bridge_distance_disgust_2021_10_03_13_13_59.m"
-# svm_nose_bridge_distance_disgust_path = "train/nose_bridge_distance_disgust_2021_10_03_15_22_24.m"
-svm_nose_bridge_distance_disgust_path = "train/disgust_nose_ar_2021_10_05_17_48_49.m"
-
-# clf = joblib.load(svm_path)
-# clf_angry = joblib.load(svm_path_angry)
-svm_angry = svm.Svm(svm_path_angry)
-svm_mouth_amazing = svm.Svm(svm_mouth_amazing_path)
-# svm_mouth_sad = svm.Svm(svm_mouth_sad_path)
-svm_mouth_below_sad = svm.Svm(svm_mouth_below_sad_path)
-svm_nose_bridge_distance_disgust = svm.Svm(svm_nose_bridge_distance_disgust_path)
-
-def check_face_rects(rects,img,predictor,gray):
+def check_face_rects(rects,bundle):
     # 好多变量 放在函数里不好吧
     if noFaceWarnUtil.no_face_warn(rects):
         print("danger")
@@ -546,124 +521,8 @@ def check_face_rects(rects,img,predictor,gray):
         # if use_beep:
         #     beep.beep_of(1)
         beep_sec(1)
-    for rect in rects:
-        # print ("have pic")
-        # print('-'*20)
-        # landmarks = np.matrix([[p.x, p.y] for p in landmark_predictor(im_rd, faces[i]).parts()])
-        shape = predictor(gray, rect)  # 返回68个人脸特征点的位置
-        # 在一张图上 框出一个脸
-        # __call__(self: dlib.shape_predictor, image: array, box: dlib.rectangle)
-        points = face_utils.shape_to_np(shape)  # 将facial landmark (x, y)转换为NumPy 数组
-        # points = shape.parts()
-        leftEye = points[commons.LEFT_EYE_START:commons.LEFT_EYE_END + 1]  # 取出左眼特征点
 
-        rightEye = points[commons.RIGHT_EYE_START:commons.RIGHT_EYE_END + 1]  # 取出右眼特征点
-        # util.get_one_eye(leftEye, img_rgb, img, log)
-        # util.get_one_eye(rightEye, img_rgb, img, log)
-
-        earhz_l = util.eye_aspect_ratio_hz(leftEye)
-        earhz_r = util.eye_aspect_ratio_hz(rightEye)
-        earhz = (earhz_l + earhz_r) / 2.0
-
-        mouth_points = points[48:68]  # 设置嘴巴特征点，其实也可以取出
-        # 48+14==62 , +4==66
-        rmeimao_points = points[17:22]  # 设置右眉毛特征点，其实也可以取出
-        lmeimao_points = points[22:27]  # 设置左眉毛特征点，其实也可以取出
-        nose1_points = points[27:31]  # 设置鼻梁间距特征点，其实也可以取出
-        # 鼻梁
-        # bridge of the nose  ,nose_bridge
-
-        nose2_points = points[31:36]  # 设置间距鼻孔特征点，其实也可以取出
-        # 鼻翼
-        eye_points = points[36:48]
-        leftEAR = eye_aspect_ratio(leftEye)  # 计算左眼EAR阈值
-        rightEAR = eye_aspect_ratio(rightEye)  # 计算左眼EAR阈值
-        mouth_ear = mouth_aspect_ratio(mouth_points)  # 计算嘴巴EAR阈值
-        # print ("d")
-        # print (d)
-        # eyebrow_ear = eyebrow_aspect_ratio(shape,d)  # 眉毛
-        eyebrow_ear = eyebrow_aspect_ratio(shape, rect)  # 眉毛
-        nose_ear = nose_aspect_ratio(nose2_points)
-        pain_ear1 = pain_aspect_ratio1(eye_points)
-        pain_ear2 = pain_aspect_ratio2(mouth_points)
-        happy_ear = happy_aspect_ratio(mouth_points)
-        # 用嘴巴这里的点 反而不清楚了
-        cv2.circle(img, tuple(mouth_points[14]), 2, (0, 255, 0), -1, 8)
-        cv2.circle(img, tuple(mouth_points[18]), 2, (0, 255, 0), -1, 8)
-
-        DeepPink = (147, 255, 20)
-        cv2.circle(img, tuple(eye_points[1]), 2, DeepPink, -1, 8)
-        cv2.circle(img, tuple(eye_points[8]), 2, DeepPink, -1, 8)
-    
-        ear = (leftEAR + rightEAR) / 2.0
-        leftEyeHull = cv2.convexHull(leftEye)  # 寻找左眼轮廓
-        rightEyeHull = cv2.convexHull(rightEye)  # 寻找右眼轮廓
-        mouthHull = cv2.convexHull(mouth_points)  # 寻找嘴巴轮廓
-
-        lmeimaoHull = cv2.convexHull(lmeimao_points)  # 寻找左眉毛轮廓
-        rmeimaoHull = cv2.convexHull(rmeimao_points)  # 寻找左眉毛轮廓
-        nose1Hull = cv2.convexHull(nose1_points)  # 寻找鼻梁轮廓
-        nose2Hull = cv2.convexHull(nose2_points)  # 寻找鼻孔轮廓
-
-        cv2.drawContours(img, [leftEyeHull], -1, (0, 255, 0), 1)  # 绘制左眼轮廓
-        cv2.drawContours(img, [rightEyeHull], -1, (0, 255, 0), 1)  # 绘制右眼轮廓
-        cv2.drawContours(img, [mouthHull], -1, (0, 255, 0), 1)  # 绘制嘴巴轮廓
-        # cv2.drawContours(img, [lmeimaoHull], -1, (0, 255, 0), 2)  # 绘制眉毛轮廓
-        # cv2.drawContours(img, [rmeimaoHull], -1, (0, 255, 0), 2)  # 绘制眉毛轮廓
-        # cv2.drawContours(img, [nose1Hull], -1, (0, 255, 0), 2)  # 绘制鼻梁轮廓
-        # cv2.drawContours(img, [nose2Hull], -1, (0, 255, 0), 2)  # 绘制鼻孔轮廓
-
-        count, frame_counter, blink_counter = close_eye_cal(
-            count, frame_counter, img, svm_eye, ear, blink_counter)
-        
-        amazing_yes = amazing_predict(mouth_ear, mCOUNT, ear, svm_mouth_amazing)
-        if amazing_yes == 1:
-            cv2.putText(img, "AMAZING", (rect.left(), rect.bottom() + 20),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-            print("AMAZING")
-
-
-        angry_yes = angry_predict(svm_angry, eyebrow_ear, mouth_ear, commons.MAR_THRESH, True)
-        if angry_yes == 1:
-            cv2.putText(img, "angry", (rect.left(), rect.bottom() + 20), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255),
-                        2, 4)
-        
-        print("happy_ear")
-        print(happy_ear)
-        # 正常是 3--4，张开嘴是 5以上
-        if happy_ear < 5:
-            if ear < 0.18:
-                if pain_ear2 > pain_ear1 * 3 / 4:
-                    cv2.putText(img, "Pain", (rect.left(), rect.bottom() + 20), cv2.FONT_HERSHEY_SIMPLEX, 0.7,
-                                (0, 0, 255), 2)
-                    print("Pain")
-        if happy_ear > 5:
-            if ear > 0.2:
-                if pain_ear2 > pain_ear1 * 4 / 5:
-                    cv2.putText(img, "Happy", (rect.left(), rect.bottom() + 20),
-                                cv2.FONT_HERSHEY_SIMPLEX, 0.7,
-                                (0, 0, 255),
-                                2)
-                    print("Happy")
-        
-        avg_mouth_slope_up = util.avg_mouth_slope_up(shape)
-        
-        res_mouth_below_sad = svm_mouth_below_sad.detect_svm(avg_mouth_slope_up)
-        if res_mouth_below_sad == 1:
-            cv2.putText(img, "sad", (rect.left(), rect.bottom() + 20),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.7,
-                        (0, 0, 255), 2)
-            print("sad")
-        
-        nose_bridge_distance = util.nose_ar(points, nose2_points)
-        res_nose_disgust = svm_nose_bridge_distance_disgust.detect_svm(nose_bridge_distance)
-        if res_nose_disgust == 1:
-            cv2.putText(img, "disgust", (rect.right(), rect.bottom() + 20),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.7,
-                        (0, 0, 255), 2)
-            print("disgust")
-
-
+import json
 
 # 视频 是可以放的 ，是因为没有初始化吗？
 # beep.setup(beep.Buzzer)
@@ -675,6 +534,8 @@ def emotion_detect(log, file_path):
 
     # svm_path = "train/ear_svm2021_09_21_19_18_05.m"
     # clf = joblib.load(svm_path)
+    print("file_path")
+    print(file_path)
 
     config = Config()
     face_cascade = cv2.CascadeClassifier(config.face_cascade_path)
@@ -751,7 +612,7 @@ def emotion_detect(log, file_path):
     video_win_name = "video"
     cv2.namedWindow(video_win_name)
     print("start")
-    # noFaceWarnUtil = NoFaceWarnUtil()
+    noFaceWarnUtil = NoFaceWarnUtil()
     # start_time = time.time()
     # https://blog.csdn.net/m0_37606112/article/details/79590012
     processBar = ProcessBar(cap, video_win_name)
@@ -773,21 +634,38 @@ def emotion_detect(log, file_path):
     svm_mouth_amazing_path = "train/train_eye_amazing_2021_09_22_09_17_24.m"
     svm_mouth_sad_path = "train/train_mouth_sad_2021_10_01_22_27_18.m"
     # svm_mouth_below_sad_path = "train/train_mouth_sad_2021_10_02_11_12_46.m"
-    svm_mouth_below_sad_path = "train/mouth_up_sad_2021_10_05_20_45_55.m"
+    # svm_mouth_below_sad_path = "train/mouth_up_sad_2021_10_05_20_45_55.m"
+    # svm_mouth_below_sad_path = "train/sad_2022_02_26_09_37_27.m"
+    svm_sad_path="train/train_mouth_sad_2021_10_02_11_12_46.m"
+    svm_disgust_path="train/disgust_nose_ar_2021_10_05_17_48_49.m"
+    # 效果不好
     # 搞错了，这里弄得是嘴巴
     # svm_nose_bridge_distance_disgust_path = "train/nose_bridge_distance_disgust_2021_10_03_11_20_49.m"
     # svm_nose_bridge_distance_disgust_path = "train/nose_bridge_distance_disgust_2021_10_03_11_31_39.m"
     # svm_nose_bridge_distance_disgust_path = "train/nose_bridge_distance_disgust_2021_10_03_13_13_59.m"
     # svm_nose_bridge_distance_disgust_path = "train/nose_bridge_distance_disgust_2021_10_03_15_22_24.m"
-    svm_nose_bridge_distance_disgust_path = "train/disgust_nose_ar_2021_10_05_17_48_49.m"
+    # svm_nose_bridge_distance_disgust_path = "train/disgust_nose_ar_2021_10_05_17_48_49.m"
+    # svm_nose_bridge_distance_disgust_path = "train/disgust_2022_02_26_10_03_23.m"
+    # svm_nose_bridge_distance_disgust_path = "train/disgust_nose_ar_2021_10_05_17_48_49.m"
+    # 这东西完全不行 happy 变成了 disgust
+    
 
     # clf = joblib.load(svm_path)
     # clf_angry = joblib.load(svm_path_angry)
     svm_angry = svm.Svm(svm_path_angry)
     svm_mouth_amazing = svm.Svm(svm_mouth_amazing_path)
     # svm_mouth_sad = svm.Svm(svm_mouth_sad_path)
-    svm_mouth_below_sad = svm.Svm(svm_mouth_below_sad_path)
-    svm_nose_bridge_distance_disgust = svm.Svm(svm_nose_bridge_distance_disgust_path)
+    # svm_mouth_below_sad = svm.Svm(svm_mouth_below_sad_path)
+    # svm_mouth_below_sad = svm.Svm("train/train_mouth_sad_2021_10_02_11_12_46.m")
+    svm_mouth_below_sad = svm.Svm(svm_sad_path)
+    
+    # svm_nose_bridge_distance_disgust = svm.Svm(svm_nose_bridge_distance_disgust_path)
+    svm_nose_bridge_distance_disgust = svm.Svm( svm_disgust_path)
+    print("start read")
+    disgust_res=[]
+    amazing_res=[]
+    angry_res=[]
+    sad_res=[]
     while (1):
         # processBar.control()
 
@@ -802,18 +680,25 @@ def emotion_detect(log, file_path):
         # #    这个不写的话 调整进度条就没用了
         ret, img = cap.read()  # 视频流读取并且返回ret是布尔值，而img是表示读取到的一帧图像
         # or not img
+        # print("read")
         if not ret:
+            # print("no ret")
             # print ("danger")
             # continue
             # break
             if file_path == "0":
+                # print("video continue")
                 continue
             else:
+                print("break")
                 break
         if commons.flip:
             img = cv2.flip(img, 1)  # 水平翻转图像
         # gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # 把读取到Img转换为2进制灰度图像
+        # img = cv2.flip(img, 1)
+        # img = cv2.resize(img, (400, 520))
         img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)  # convert to RGB
+        
 
         gray = cv2.cvtColor(img_rgb, cv2.COLOR_RGB2GRAY)
         rects = detector(gray, 0)  # 调用检测器人脸检测
@@ -822,33 +707,7 @@ def emotion_detect(log, file_path):
         # 识别不出来 树莓派 dlib
         # faces = face_cascade.detectMultiScale(gray, 1.3, 2)  # 调用级联分类器对gray进行人脸识别并且返回一个矩形列表
         font = cv2.FONT_HERSHEY_SIMPLEX
-        # print ("set up")
-        # 没有人脸
-        # print ("rects")
-        # print (rects)
-        # print ("img")
-        # print (img)
-        # 注意摄像头不要拿倒过来了,摄像头是在上面的
-        # print ("rects")
-        # print (rects)
-        # 注释开始
-        # for k, d in enumerate(rects):
-        # # for idx, content in enumerate(rects):
-        #     # print("第", k + 1, "个人脸d的坐标：",
-        #     # 	  "left:", d.left(),
-        #     # 	  "right:", d.right(),
-        #     # 	  "top:", d.top(),
-        #     # 	  "bottom:", d.bottom())
-        #     width = d.right() - d.left()
-        #     heigth = d.bottom() - d.top()
-        #     # print ("d",d)、
-        # 注释结束
-        # print ("rects")
-        # print (rects)
-        # print (len(rects))
-        #         rectangles[]
-        # 0
-        # cnt_helper=Cnt()
+       
         if noFaceWarnUtil.no_face_warn(rects):
             print("danger")
             cv2.putText(img, "TIRED!!Warnning", (150, 30),
@@ -857,45 +716,6 @@ def emotion_detect(log, file_path):
             #     beep.beep_of(1)
             beep_sec(1)
 
-        # start_time, should_warn = no_face_warn(start_time, rects, img, should_warn)
-        #
-        # now_time = time.time()
-        # # print ("now_time")
-        # # print (now_time)
-        # # print ("now_time-start_time")
-        # # print (now_time - start_time)
-        # # warn_time = 1
-        # # 每隔一秒 检查一下人在不在
-        # # if now_time - start_time >= warn_time:
-        # # 不是这个逻辑，应该是 每次过了 3s 就测试一次
-        # # print(start_time,start_time)
-        # # print(now_time,now_time)
-        # time_gap = now_time - start_time
-        # # print("time_gap",time_gap)
-        #
-        # if time_gap >= commons.warn_time:
-        #     should_warn = True
-        #     # check_danger(rects)
-        #     # if len(rects) == 0:
-        #     #     print("danger")
-        #     #     cv2.putText(img, "TIRED!!Warnning", (150, 30),
-        #     #                 cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-        #     #     # if use_beep:
-        #     #     #     beep.beep_of(1)
-        #     #     beep_sec(1)
-        #     # 不是这个时候 才能叫  是这个时候 改变了状态
-        #     print("start_time", start_time)
-        #     start_time = now_time
-        #
-        # if len(rects) == 0:
-        #     if should_warn:
-        #         print("danger")
-        #         cv2.putText(img, "TIRED!!Warnning", (150, 30),
-        #                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-        #         # if use_beep:
-        #         #     beep.beep_of(1)
-        #         beep_sec(1)
-        #         should_warn = False
 
         for rect in rects:
             # print ("have pic")
@@ -947,18 +767,7 @@ def emotion_detect(log, file_path):
             DeepPink = (147, 255, 20)
             cv2.circle(img, tuple(eye_points[1]), 2, DeepPink, -1, 8)
             cv2.circle(img, tuple(eye_points[8]), 2, DeepPink, -1, 8)
-            # opencv 颜色
-            # BRG
-            # 255,20,147  rgb
-            #
-            # cv2.
-            # mouth[14] - mouth[18]
-            # print('leftEAR = {0}'.format(leftEAR))
-            # print('rightEAR = {0}'.format(rightEAR))
-            # print('openMouth = {0}'.format(mouth_ear))
-            # print('eyeborwtilt = {0}'.format(eyebrow_ear))
-            # print('happy_ear = {0}'.format(happy_ear))
-            # print('noselength ={0}'.format(nose_ear))
+          
             ear = (leftEAR + rightEAR) / 2.0
             leftEyeHull = cv2.convexHull(leftEye)  # 寻找左眼轮廓
             rightEyeHull = cv2.convexHull(rightEye)  # 寻找右眼轮廓
@@ -979,177 +788,26 @@ def emotion_detect(log, file_path):
 
             count, frame_counter, blink_counter = close_eye_cal(
                 count, frame_counter, img, svm_eye, ear, blink_counter)
-            # draw_characteristic_point(img,shape)
-            # for i in range(68):
-            # 	cv2.circle(img, (shape.part(i).x, shape.part(i).y), 2, (0, 255, 0), -1, 8)
-            # 开始注释 [2]
-            # count += 1
-            # # for pt in leftEye:
-            # # 	pt_pos = (pt[0], pt[1])
-            # # 	cv2.circle(img, pt_pos, 2, (255, 0, 0), 1)
-            #
-            # # for pt in rightEye:
-            # # 	pt_pos = (pt[0], pt[1])
-            # # 	cv2.circle(img, pt_pos, 2, (0, 255, 0), 1)
-            # # 如果少于的次数 > 某个数字，就是说他闭眼的时间太多了
-            # # close_eye_long_frame_cnt=10
-            #
-            # # close_eye_long_frame_cnt = 25
-            # # if frame_counter >= close_eye_long_frame_cnt:
-            # # disguts 会 当作闭眼的时间长 因为 眼睛有点 变小了
-            # if frame_counter >= commons.close_eye_long_frame_cnt:
-            #     print("frame_counter")
-            #     print(frame_counter)
-            #     print("danger")
-            #     # 闭眼的时间太长了
-            #     cv2.putText(img, "TIRED!!Warnning", (150, 50),
-            #                 cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-            #     # if use_beep:
-            #     #     beep.beep_of(1)
-            #     beep_sec(1)
-            #
-            # # 注释开始
-            # # if ear < EYE_AR_THRESH:
-            # #     frame_counter += 1
-            # # elif ear >= eye_open_thresh:
-            # #     # else:
-            # #     # 当EAR小于阈值时，接连多少帧一定发生眨眼动作，只有小于阈值的帧数超过了这个值时，
-            # #     # 才认为当前眼睛是闭合的，即发生了眨眼动作；否则则认为是误操作。
-            # #     print("frame_counter")
-            # #     print(frame_counter)
-            # #     # 连续三帧感觉条件太苛刻
-            # #     if frame_counter >= EYE_AR_CONSEC_FRAMES:
-            # #         if count < frame_cnt_blink_refresh:
-            # #             blink_counter += 1
-            # #     frame_counter = 0
-            # # 注释 结束
-            #
-            # # svm.blink_detect_svm(ea)
-            # # svm_eye.blink_detect_svm()
-            # res_eye_close = svm_eye.blink_detect_svm(ear)
-            # # 准确
-            # frame_counter, blink_counter = eye_cnt(res_eye_close, frame_counter,
-            #                                        EYE_AR_CONSEC_FRAMES, count,
-            #                                        frame_cnt_blink_refresh, blink_counter)
-            # # 注释开始
-            # # if res_eye_close == 1:
-            # #     frame_counter += 1
-            # # else:
-            # #     # else:
-            # #     # 当EAR小于阈值时，接连多少帧一定发生眨眼动作，只有小于阈值的帧数超过了这个值时，
-            # #     # 才认为当前眼睛是闭合的，即发生了眨眼动作；否则则认为是误操作。
-            # #     print("frame_counter")
-            # #     print(frame_counter)
-            # #     # 连续三帧感觉条件太苛刻
-            # #     if frame_counter >= EYE_AR_CONSEC_FRAMES:
-            # #         if count < frame_cnt_blink_refresh:
-            # #             blink_counter += 1
-            # #     frame_counter = 0
-            # # 注释结束
-            #
-            # # earhz_thresh = 4.5
-            # # # 树莓派的摄像头的话 ，就 不用这个了，ear 好像也挺好的
-            # # # 小的是睁眼 3多
-            # # # log.info("earhz: %f"%earhz)
-            # # # log.info(earhz)
-            # # if earhz >= earhz_thresh:
-            # #     frame_counter += 1
-            # # else:
-            # #     # 当EAR小于阈值时，接连多少帧一定发生眨眼动作，只有小于阈值的帧数超过了这个值时，
-            # #     # 才认为当前眼睛是闭合的，即发生了眨眼动作；否则则认为是误操作。
-            # #     if frame_counter >= EYE_AR_CONSEC_FRAMES:
-            # #         if count < frame_cnt_blink_refresh:
-            # #             blink_counter += 1
-            # #     frame_counter = 0
-            #
-            # if mouth_ear > MAR_THRESH:
-            #     mCOUNT += 1
-            # else:
-            #     if mCOUNT >= MOUTH_AR_CONSEC_FRAMES:
-            #         mTOTAL += 1
-            #     mCOUNT = 0
-            #
-            # if count >= frame_cnt_blink_refresh:
-            #     count = 0
-            #     blink_counter = 0
-            # # if blink_counter >= 10:
-            # #     detect_danger=1
-            # # if detect_danger == 1
-            # # 一秒钟大概25帧
-            # # 3秒眨眼5次 就当作他困了
-            # if blink_counter >= blink_cnt_sleep:
-            #     cv2.putText(img, "TIRED!!Warnning".format(ear), (150, 30),
-            #                 cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-            #     print("TIRED!!Warnning")
-            #     # beep.beep_of(1)
-            #     beep_sec(1)
-            # # if blink_counter >= 10:
-            # #     cv2.putText(img, "TIRED!!Warnning".format(ear), (150, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255),
-            # #                 2)
-            # #     print ("TIRED!!Warnning")
-            # else:
-            #     cv2.putText(img, "Blinks:{0}".format(blink_counter),
-            #                 (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-            #     cv2.putText(img, "EAR:{:.2f}".format(ear), (300, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-            #     cv2.putText(img, "MOUTH{0}".format(mTOTAL), (500, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-            #     print("Blinks:{0}".format(blink_counter))
-            #     print("EAR:{:.2f}".format(ear))
-            #     print("MOUTH{0}".format(mTOTAL))
-            # 结束注释[2]
-
-            # 嘴巴闭合阈值，大于0.5认为张开嘴巴
-            # 当mar大于阈值0.5的时候，接连多少帧一定发生嘴巴张开动作，这里是3帧
-            # 睁开嘴巴 睁开 眼睛就算是 AMAZING
+           
             amazing_yes = amazing_predict(mouth_ear, mCOUNT, ear, svm_mouth_amazing)
             if amazing_yes == 1:
                 cv2.putText(img, "AMAZING", (rect.left(), rect.bottom() + 20),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
                 print("AMAZING")
-
-                # 注释开始
-            # if mouth_ear > MAR_THRESH and mCOUNT >= MOUTH_AR_CONSEC_FRAMES:
-            #     if ear > EYE_AR_THRESH:
-            #         cv2.putText(img, "AMAZING", (rect.left(), rect.bottom() + 20),
-            #                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-            #         print("AMAZING")
-            # 注释结束
-            # 伤心的表情 可以根据嘴巴 往下撇嘴
-
-            # 如果闭上嘴巴，可能是生气或者正常
-            # 0.03 好像更加不准了
-            # 0.02
-            # 0.01 特别不准
+            # amazing_res.append(amazing_yes)
+            # print("amazing_yes")
+            # print(amazing_yes)
+            res_push(amazing_res,amazing_yes)
 
             angry_yes = angry_predict(svm_angry, eyebrow_ear, mouth_ear, MAR_THRESH, True)
             if angry_yes == 1:
                 cv2.putText(img, "angry", (rect.left(), rect.bottom() + 20), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255),
                             2, 4)
                 # amazing  经常出现
-
-            # 开始注释
-            # angry_predict=svm_angry.detect_svm(eyebrow_ear)
-            # if angry_predict==1:
-            #     cv2.putText(img, "angry", (rect.left(), rect.bottom() + 20), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255),
-            #                 2, 4)
-
-            # angry_limit = 0.02
-            # angry_limit = 0.2
-            # # if mouth_ear < MAR_THRESH and eyebrow_ear < 0.03:
-            # print("eyebrow_ear")
-            # print(eyebrow_ear)
-            # if mouth_ear < MAR_THRESH and eyebrow_ear < angry_limit:
-            #     # cv2.putText(img, "angry", (d.left(), d.bottom() + 20), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2, 4)
-            #     cv2.putText(img, "angry", (rect.left(), rect.bottom() + 20), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255),
-            #                 2, 4)
-            #     print("angry")
-            # 结束注释
-
-            # else:
-            # 	cv2.putText(img, "nature", (d.left(), d.bottom() + 20), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2, 4)
-            # nature 也打印出来的话 就挺烦的
-            # 不过 angry 还是不准
-            print("happy_ear")
-            print(happy_ear)
+            # angry_res.append(angry_yes)
+            res_push(angry_res,angry_yes)
+            # print("happy_ear")
+            # print(happy_ear)
             # 正常是 3--4，张开嘴是 5以上
             if happy_ear < 5:
                 if ear < 0.18:
@@ -1165,20 +823,7 @@ def emotion_detect(log, file_path):
                                     (0, 0, 255),
                                     2)
                         print("Happy")
-            # cv2.imshow("Frame", img)
-
-            #     svm_mouth_sad_ear=util.avg_mouth_slope(shape)
-            #     # util.mouth_slope_left()
-            #     res_mouth_sad=svm_mouth_sad.detect_svm(svm_mouth_sad_ear)
-            #     if res_mouth_sad==1:
-            #         cv2.putText(img, "sad", (rect.left(), rect.bottom() + 20),
-            #                     cv2.FONT_HERSHEY_SIMPLEX, 0.7,
-            #                     (0, 0, 255),2)
-            #         print("sad")
-
-            # avg_mouth_slope_below = util.avg_mouth_slope_below(shape)
-            # avg_mouth_slope_below = util.avg_mouth_slope_below(shape)
-            # 斜坡;
+          
             avg_mouth_slope_up = util.avg_mouth_slope_up(shape)
             # util.mouth_slope_left()
             # sad 有点准确了
@@ -1187,10 +832,12 @@ def emotion_detect(log, file_path):
             #             res_mouth_below_sad = svm_mouth_below_sad.detect_svm(avg_mouth_slope_below)
             res_mouth_below_sad = svm_mouth_below_sad.detect_svm(avg_mouth_slope_up)
             if res_mouth_below_sad == 1:
-                cv2.putText(img, "sad", (rect.left(), rect.bottom() + 20),
+                cv2.putText(img, "sad", (rect.left(), rect.bottom() + 60),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.7,
                             (0, 0, 255), 2)
                 print("sad")
+            # sad_res.append(res_mouth_below_sad)
+            res_push(sad_res,res_mouth_below_sad)
             # disgust 完全不准
             #             文档：鼻翼  厌恶.note
             # 链接：http://note.youdao.com/noteshare?id=33d34d85b2999b155feea377ee998ef0&sub=BA4B7EEC05494B868DD64F6270FBB934
@@ -1199,10 +846,15 @@ def emotion_detect(log, file_path):
             nose_bridge_distance = util.nose_ar(points, nose2_points)
             res_nose_disgust = svm_nose_bridge_distance_disgust.detect_svm(nose_bridge_distance)
             if res_nose_disgust == 1:
+                pass
                 cv2.putText(img, "disgust", (rect.right(), rect.bottom() + 20),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.7,
                             (0, 0, 255), 2)
+                            # 偶尔有 disgust吧
                 print("disgust")
+            # if
+            # disgust_res.append(res_nose_disgust)
+            res_push(disgust_res,res_nose_disgust)
 
         cv2.imshow(video_win_name, img)
         if util.wait_esc():
@@ -1210,10 +862,93 @@ def emotion_detect(log, file_path):
         # if cv2.waitKey(1) & 0xFF == ord("q"):
         #     break
 
+    res_dir="res"
+    # get_time
+    # write_txt(disgust_res,f"{res_dir}/disgust_res_{now_time_str}_{commons.train_type}.txt")
+    # write_txt(amazing_res,f"{res_dir}/amazing_res_{now_time_str}_{commons.train_type}.txt")
+    # write_txt(angry_res,f"{res_dir}/angry_res_{now_time_str}_{commons.train_type}.txt")
+    # write_txt(sad_res,f"{res_dir}/sad_res_{now_time_str}_{commons.train_type}.txt")
+    disgust_res_txt=f"{res_dir}/disgust_res_{now_time_str}.txt"
+    amazing_res_txt=f"{res_dir}/amazing_res_{now_time_str}.txt"
+    angry_res_txt=f"{res_dir}/angry_res_{now_time_str}.txt"
+    sad_res_txt=f"{res_dir}/sad_res_{now_time_str}.txt"
+    # disgust_res_txt=f"{res_dir}/disgust_res_{now_time_str}.txt"
+    write_txt(disgust_res,disgust_res_txt)
+    write_txt(amazing_res,amazing_res_txt)
+    write_txt(angry_res,angry_res_txt)
+    write_txt(sad_res,sad_res_txt)
+    # write_txt(disgust_res,f"{res_dir}/disgust_res.txt")
     # 应该是跑起来了 ，但是没有显示屏
+    # svm_path = "train/close_eye_2021_10_05_17_31_42.m"
+    # svm_eye = svm.Svm(svm_path)
+    # svm_path_angry = "train/train_eye_brow_angry_2021_09_22_08_53_41.m"
+    # svm_mouth_amazing_path = "train/train_eye_amazing_2021_09_22_09_17_24.m"
+    # svm_mouth_sad_path = "train/train_mouth_sad_2021_10_01_22_27_18.m"
+    # # svm_mouth_below_sad_path = "train/train_mouth_sad_2021_10_02_11_12_46.m"
+    # # svm_mouth_below_sad_path = "train/mouth_up_sad_2021_10_05_20_45_55.m"
+    # # svm_mouth_below_sad_path = "train/sad_2022_02_26_09_37_27.m"
+    # svm_sad_path="train/train_mouth_sad_2021_10_02_11_12_46.m"
+    # svm_disgust_path="train/disgust_nose_ar_2021_10_05_17_48_49.m"
+    res_json={
+        "video_path":file_path,
+        "disgust_res_txt":disgust_res_txt,
+        "amazing_res_txt":amazing_res_txt,
+        "angry_res_txt":angry_res_txt,
+        "sad_res_txt":sad_res_txt,
+        "svm_close_eye_path":svm_path,
+        "svm_angry_path":svm_path_angry,
+        "svm_amazing_path":svm_mouth_amazing_path,
+        "svm_sad_path":svm_mouth_sad_path,
+        "svm_disgust_path":svm_disgust_path,
+        "now_time_str":now_time_str
+    }
+    # json.dumps()
+    res_json_str = json.dumps(res_json)
+    with open(f"{res_dir}/res_json_{now_time_str}.json","w+") as f:
+        f.write(res_json_str)
+
     cap.release()
     cv2.destroyAllWindows()
 
+def res_push(lst,res):
+    if res is None:
+        # print("append none")
+        lst.append(0)
+        return
+    # https://blog.csdn.net/weixin_45875199/article/details/108045482
+    # 这样子可以吗
+    # if type(res)==list:
+    # 可能是个 np ？
+    # 不是list
+    if res==1:
+        lst.append(1)
+    else:
+        lst.append(0)
+    # if type(res)==type([]):
+    #     print("is list")
+    #     if len(res)>=1:
+    #         print("have 1")
+    #         print("res[0]")
+    #         print(res[0])
+    #         lst.append(res[0])
+    #         return
+    # else:
+    #     print("no list")
+    #     lst.append(0)
+
+def write_txt(lst,filename):
+    res=""
+    fir=True
+    if len(lst)==0:
+        return
+    for i in lst:
+        if fir:
+            res+=str(i)
+            fir=False
+        else:
+            res+=","+str(i)
+    with open(filename,"w+") as f:
+        f.write(res)
 
 # 生气的没有
 beep_sec(1)
@@ -1238,6 +973,7 @@ import argparse
 # 一旦识别不到眼睛了就报警 有点夸张了
 #
 #
+
 # 离开 远一点 可以找到 人
 # video_path = r"G:\FFOutput\normalVID_20211003_144749.mp4"
 # video_path = r"G:\FFOutput\digustVID_20211003_120342.mp4"
@@ -1250,15 +986,47 @@ import argparse
 
 # video_path =  r"G:\FFOutput\normalVID_20211003_144749.mp4"
 # 可以识别 就是正常
-video_path = r"G:\FFOutput\fear_no_glassVID_20211003_151540.mp4"
+# video_path = r"G:\FFOutput\fear_no_glassVID_20211003_151540.mp4"
+
 # fear 不行
-# 他是当作 amazing和sad
 
 # video_path = r"G:\FFOutput\sleep_VID_20211007_201227.mp4"
 # 没有显示 危险？
 # video_path = r"G:\FFOutput\sleep_beep_VID_20211007_202046.mp4"
 # 无效
 # video_path = r"G:\FFOutput\sleep_VID_20211007_203000.mp4"
+# video_path = 0
+
+camera="0"
+# video_path = camera
+# video_path = r"G:\file\学校\人脸识别校创\fear_bandicam 2021-10-07 15-39-33-723.mp4"
+video_path = r"G:\emotion\angry_many_pos_VID_20211005_162002.mp4"
+# angry 也全是disgust 和 sad 
+
+# video_path = r"G:\emotion\amazing_VID_20211005_161107.mp4"
+# video_path = r"G:\emotion\sad_VID_20211005_161024.mp4"
+# video_path = r"G:\FFOutput\sad_VID_20211006_155448.mp4"
+# sad 的andry 甚至更多
+
+# video_path = r"G:\FFOutput\fear_VID_20211006_114409.mp4"
+# 效果不好
+
+# video_path = r"G:\FFOutput\happy_VID_20211006_151114.mp4"
+# happy 当作 disgust 什么鬼 还有 sad 
+
+# video_path = r"G:\FFOutput\disgust_no_glass_VID_20211003_151356.mp4"
+# 会有 sad 和 anry 
+
+# video_path = r"G:\FFOutput\fear_VID_20211006_212800.mp4"
+# 这个一点都不准确
+
+# video_path = r"G:\emotion\happy_VID_20211005_161044.mp4"
+# happy 完全是 disgust
+# video_path = r"G:\FFOutput\amazing_far_VID_20211005_162639.mp4"
+# disgust  怎么什么都是啊
+# 为什么 amazing 会有 sad
+
+# 这个视频 很多都是angry了 不对啊
 # 闭眼 没用了
 # video_path = r"G:\download\眨眼video2021_09_21_14_49_57.avi"
 # 视频不行

@@ -84,3 +84,81 @@ git remote add origin https://gitee.com/starplatinum111/blink_detect.git
 git add 文件夹
 
 git 有些文件没有add ignore也没有
+
+2022年2月25日21:52:36
+disgust_res
+amazing_res
+angry_res
+sad_res
+
+2022年2月26日09:36:28
+训练 表情 ，在 这里
+G:\project\pythonProj\blink_detect\data_collect2.py
+yes_video_path = r"G:\FFOutput\sad_VID_20211006_155448.mp4"
+no_video_path = r"G:\FFOutput\normalVID_20211003_144749.mp4"
+写上视频的路径
+G:\project\pythonProj\blink_detect\commons.py
+
+训练收集数据的时候要配置用的哪个脸部特征 比如说鼻子啊
+G:\project\pythonProj\blink_detect\data_collect2.py
+avg_mouth_slope_up = util.avg_mouth_slope_up(shape)
+
+
+配置现在训练的是哪种表情
+train_type="sad"
+打印出来的 time_str 2022_02_26_09_37_27，就可以知道现在收集的数据txt是那个
+
+复制到到这里
+G:\project\pythonProj\blink_detect\train_svm.py
+time_str= "2022_02_26_09_37_27"
+
+yes_video_path = r"G:\FFOutput\sad_VID_20211006_155448.mp4"
+使用这个视频训练的结果是这样的
+sad 和 angry 很难分辨 很多时候 也不显示表情
+
+
+svm_mouth_below_sad_path = "train/sad_2022_02_26_09_37_27.m"
+    # 效果不好
+
+
+    G:\project\pythonProj\blink_detect\blink_detect_func_right.py
+    识别结果写入文件 做统计
+
+
+这里配置 现在的表情
+    G:\project\pythonProj\blink_detect\commons.py
+    train_type="fear"
+
+数据写入 这个文件夹
+G:\project\pythonProj\blink_detect\res
+
+video_path = r"G:\FFOutput\fear_VID_20211006_114409.mp4"
+效果不好
+
+happy disgust angry  amazing sad 都不行
+
+## 准确性
+2022年2月26日10:23:00
+amazing 还是有点准确的 就是有时候又 disgust 
+
+disgust 和andry 重合度太高 。。因为 都有皱眉头
+
+video_path = r"G:\FFOutput\fear_VID_20211006_212800.mp4"
+这个一点都不准确
+
+video_path = r"G:\FFOutput\sad_VID_20211006_155448.mp4"
+sad 的andry 甚至更多
+
+happy 不行
+
+不能只靠一个参数来训练吧
+
+video_path = r"G:\emotion\angry_many_pos_VID_20211005_162002.mp4"
+ angry 也全是disgust 和 sad 
+
+ 惊讶 还行
+ 厌恶 不太行
+愤怒 有disgust 和 sad 
+恐惧 完全不行
+ 悲伤  一般
+ 愉悦 不行

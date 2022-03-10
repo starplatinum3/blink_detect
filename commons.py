@@ -50,16 +50,32 @@ frame_cnt_blink_refresh = fps_guess * 3
 # flip=True
 flip = False
 
+
+class EmoStr:
+    normal = "normal"
+    amazing = "amazing"
+    disgust = "disgust"
+    angry = "angry"
+    fear = "fear"
+    sad = "sad"
+    happy = "happy"
+
+
 # train_type="train_eye_brow_angry"
 # train_type="train_eye_amazing"
 # train_type="train_mouth_sad"
-train_type="mouth_up_sad"
+# train_type="mouth_up_sad"
 # train_type="nose_wing_distance_disgust"
 # train_type="nose_bridge_distance_disgust"
 # train_type = "fear_eye"
 # train_type = "close_eye"
 # train_type = "disgust_nose_ar"
 # train_type="train_eye_amazing"
+# train_type="sad"
+# train_type="fear"
+# train_type=EmoStr.happy
+train_type="disgust"
+# train_type="amazing"
 
 # 鼻梁
 # bridge
@@ -96,15 +112,6 @@ batch_size = 50
 # type_cnt = 4
 type_cnt = 7
 
-
-class EmoStr:
-    normal = "normal"
-    amazing = "amazing"
-    disgust = "disgust"
-    angry = "angry"
-    fear = "fear"
-    sad = "sad"
-    happy = "happy"
 
 train_txt_dir="train_txt"
 

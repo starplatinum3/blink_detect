@@ -86,6 +86,6 @@ class Svm:
             # svm 只会返回 0 1
             # opencv svm
             # https://blog.csdn.net/mervins/article/details/78860358
-            print(res)
+            # print(res)
             return res
         return None
