@@ -21,6 +21,8 @@ images
 img
 log
 
+model
+
 train_txt
 # *.txt 
 *.docx 

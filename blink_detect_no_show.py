@@ -743,19 +743,21 @@ def emotion_detect(log, file_path):
     cap.set(3, 640)
     cap.set(4, 480)
     show_it = False
-    show_processBar=False
 
     # blink_cnt_sleep = 5
     blink_cnt_sleep = 4
     fps_guess = 25
     frame_cnt_blink_refresh = fps_guess * 3
+    
     video_win_name = "video"
-    cv2.namedWindow(video_win_name)
+    if show_win:
+        cv2.namedWindow(video_win_name)
+    # cv2.namedWindow(video_win_name)
     print("start")
     # noFaceWarnUtil = NoFaceWarnUtil()
     # start_time = time.time()
     # https://blog.csdn.net/m0_37606112/article/details/79590012
-    if show_processBar:
+    if show_win:
         processBar = ProcessBar(cap, video_win_name)
     # frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     #
@@ -790,10 +792,8 @@ def emotion_detect(log, file_path):
     # svm_mouth_sad = svm.Svm(svm_mouth_sad_path)
     svm_mouth_below_sad = svm.Svm(svm_mouth_below_sad_path)
     svm_nose_bridge_distance_disgust = svm.Svm(svm_nose_bridge_distance_disgust_path)
-    print("svm end")
     while (1):
-        if show_processBar:
-            processBar.control()
+        # processBar.control()
 
         # if loop_flag == pos:
         #     loop_flag = loop_flag + 1
@@ -1207,8 +1207,8 @@ def emotion_detect(log, file_path):
                             cv2.FONT_HERSHEY_SIMPLEX, 0.7,
                             (0, 0, 255), 2)
                 print("disgust")
-
-        cv2.imshow(video_win_name, img)
+        if show_win:
+            cv2.imshow(video_win_name, img)
         if util.wait_esc():
             break
         # if cv2.waitKey(1) & 0xFF == ord("q"):
@@ -1254,15 +1254,15 @@ import argparse
 
 # video_path =  r"G:\FFOutput\normalVID_20211003_144749.mp4"
 # 可以识别 就是正常
-video_path = r"G:\FFOutput\fear_no_glassVID_20211003_151540.mp4"
+# video_path = r"G:\FFOutput\fear_no_glassVID_20211003_151540.mp4"
+
 # fear 不行
-# 他是当作 amazing和sad
 
 # video_path = r"G:\FFOutput\sleep_VID_20211007_201227.mp4"
 # 没有显示 危险？
 # video_path = r"G:\FFOutput\sleep_beep_VID_20211007_202046.mp4"
 # 无效
-# video_path = r"G:\FFOutput\sleep_VID_20211007_203000.mp4"
+video_path = r"G:\FFOutput\sleep_VID_20211007_203000.mp4"
 # 闭眼 没用了
 # video_path = r"G:\download\眨眼video2021_09_21_14_49_57.avi"
 # 视频不行
@@ -1331,6 +1331,8 @@ video_path = r"G:\FFOutput\fear_no_glassVID_20211003_151540.mp4"
 # 这视频 不行 打不卡了
 # 眨眼 好像有点准确 又有点不准
 # video_path = r"G:\FFOutput\blink_VID_20211007_155744.mp4"
+# show_win=False
+show_win=True
 parser = argparse.ArgumentParser()
 parser.add_argument(
     "--video_file_path", required=False, type=str,
